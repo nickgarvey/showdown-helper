@@ -8,6 +8,9 @@ Feature List:
 
 # Installation
 
-Clone this repo
+Prod build:
+* Install from [Chrome Store](https://chrome.google.com/webstore/detail/showdown-helper/lgkjcofboheamlghbmmpegfdjifaaocl)
 
-Go to extensions -> developer mode -> add unpacked -> pick the repo folder
+Trunk:
+* Clone this repo
+* Go to extensions -> developer mode -> add unpacked -> pick the repo folder

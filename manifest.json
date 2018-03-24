@@ -1,11 +1,10 @@
 {
-    "name": "Showdown Smogon",
-    "version": "1.0",
-    "description": "Adds Smogon UI elements to Pokemon Showdown for easier battles",
+    "name": "Showdown Helper",
+    "version": "1.0.1",
+    "description": "Adds UI elements to Pokemon Showdown for easier battles",
     "manifest_version": 2,
     "permissions": [
         "declarativeContent",
-        "tabs",
         "https://www.smogon.com/",
         "https://play.pokemonshowdown.com/"
     ],

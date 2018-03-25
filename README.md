@@ -4,6 +4,7 @@ Showdown Helper is a Chrome extension that adds utilities to the Pokemon Showdow
 
 Feature List:
 * Clicking on a Pokemon in the team list will go directly to the Smogon page for it.
+* Show a notification on battle end
 * That's it for now :)
 
 # Installation

@@ -9,13 +9,14 @@
         "https://play.pokemonshowdown.com/"
     ],
     "background": {
-        "scripts": ["show_icon.js"],
+        "scripts": ["toggle_icon.js", "show_notification.js"],
         "persistent": false
     },
     "content_scripts": [
         {
             "matches": ["https://play.pokemonshowdown.com/*"],
-            "js": ["add_links.js"]
+            "js": ["add_links.js"],
+            "run_at": "document_start"
         }
     ],
     "page_action": {

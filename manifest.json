@@ -5,6 +5,7 @@
     "manifest_version": 2,
     "permissions": [
         "declarativeContent",
+        "webRequest",
         "https://www.smogon.com/",
         "https://play.pokemonshowdown.com/"
     ],
@@ -15,7 +16,7 @@
     "content_scripts": [
         {
             "matches": ["https://play.pokemonshowdown.com/*"],
-            "js": ["add_links.js"],
+            "js": ["content.js"],
             "run_at": "document_start"
         }
     ],

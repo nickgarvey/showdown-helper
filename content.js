@@ -1,5 +1,34 @@
 'use strict';
 
+function* yield_added_nodes(mutation_records) {
+  for (const mutation_record of mutation_records) {
+    if (mutation_record.addedNodes === null) {
+      continue;
+    }
+
+    for (const node of mutation_record.addedNodes) {
+      yield node;
+    }
+  }
+}
+
+// It's difficult to tell if a room tracks a live battle, a replay, or an
+// observed battle. This class watchs the room to see if the user is ever
+// presented with the option to attack. If so, it's considered a live room, even
+// if the battle has now ended.
+class LiveBattleDiscoverer {
+  constructor(room_div) {
+    this.is_live = false;
+    (new MutationObserver((records, observer) => {
+      for (const node of yield_added_nodes(records)) {
+        if (node.nodeName === "DIV" && node.querySelector(".whatdo")) {
+          this.is_live = true;
+          observer.disconnect();
+        }
+      }
+    })).observe(room_div, {childList: true, subtree: true});
+  }
+}
 
 function add_picon_links(room_div) {
   const picons = document.querySelectorAll(".teamicons > .picon");
@@ -16,24 +45,27 @@ function add_picon_links(room_div) {
   }
 }
 
-function show_notification_on_end(room_div, mutation_records) {
-  // TODO enable this
-  return;
-  console.log(is_user_live_battle(room_div));
-  for (const record of mutation_records) {
-    for (const node of record.addedNodes) {
-      if (document.hidden && node.innerText.match(/.*won the battle!/)) {
-        if (is_user_live_battle(room_div)) {
-          chrome.runtime.sendMessage(
-            {'notification': 'Battle complete!'}
-          );
+function show_end_battle_notif(discoverer, mutation_records, observer) {
+  for (const node of yield_added_nodes(mutation_records)) {
+    if (
+      discoverer.is_live &&
+      node.innerText.match(/.*won the battle!/)
+    ) {
+      chrome.runtime.sendMessage(
+        {
+          'type': 'notification',
+          'title': 'Battle complete!',
+          'message': node.innerText,
         }
-      }
+      );
+      observer.disconnect();
+      break;
     }
   }
 }
 
 function observe_room(room_div) {
+  const discoverer = new LiveBattleDiscoverer(room_div);
   (new MutationObserver(() => add_picon_links(room_div)))
       .observe(
         room_div.querySelector('.battle'),
@@ -41,7 +73,7 @@ function observe_room(room_div) {
       );
 
   (new MutationObserver(
-    (records) => show_notification_on_battle_end(room_div, records))
+    (records, observer) => show_end_battle_notif(discoverer, records, observer))
   )
       .observe(
         room_div.querySelector('.battle-log'),
@@ -50,41 +82,24 @@ function observe_room(room_div) {
 }
 
 function add_room_observers(mutation_records) {
-  for (const mutation_record of mutation_records) {
-    if (mutation_record.addedNodes === null) {
-      continue;
-    }
-
-    for (const node of mutation_record.addedNodes) {
-      if (node.nodeName === "DIV" && node.id.match(/room-battle-.*/)) {
-        observe_room(node);
-      }
+  for (const node of yield_added_nodes(mutation_records)) {
+    if (node.nodeName === "DIV" && node.id.match(/room-battle-.*/)) {
+      observe_room(node);
     }
   }
-}
-
-// Returns true if the battle is currently one the user participates in
-function is_user_live_battle(room_div) {
-  return !room_div.querySelector("button[name='instantReplay']");
 }
 
 // This script is run before the document is created, to make sure all of our
 // listeners trigger when the corresponding DOM elements are created.
 // So, we listen to the body element being created, and attach once it is.
 new MutationObserver((mutation_records, observer) => {
-  for (const mutation_record of mutation_records) {
-    if (mutation_record.addedNodes === null) {
-      continue;
+  for (const node of yield_added_nodes(mutation_records)) {
+    if (node.nodeName === "BODY") {
+      (new MutationObserver(add_room_observers))
+        .observe(node, {childList: true});
+      // Once we've started observing the body nothing else to do
+      observer.disconnect();
+      return;
     }
-    for (const node of mutation_record.addedNodes) {
-      if (node.nodeName === "BODY") {
-        (new MutationObserver(add_room_observers))
-          .observe(node, {childList: true});
-        // Once we've started observing the body nothing else to do
-        observer.disconnect();
-        return;
-      }
-    }
-
   }
 }).observe(document.documentElement, {childList: true});

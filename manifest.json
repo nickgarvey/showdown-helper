@@ -5,7 +5,7 @@
     "manifest_version": 2,
     "permissions": [
         "declarativeContent",
-        "webRequest",
+        "notifications",
         "https://www.smogon.com/",
         "https://play.pokemonshowdown.com/"
     ],

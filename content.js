@@ -28,6 +28,10 @@ class LiveBattleDiscoverer {
       }
     })).observe(room_div, {childList: true, subtree: true});
   }
+
+  battleEnd() {
+    this.is_live = false;
+  }
 }
 
 function add_picon_links(room_div) {
@@ -59,6 +63,7 @@ function show_end_battle_notif(discoverer, mutation_records, observer) {
         }
       );
       observer.disconnect();
+      discoverer.battleEnd();
       break;
     }
   }

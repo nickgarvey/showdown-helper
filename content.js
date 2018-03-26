@@ -34,6 +34,13 @@ class LiveBattleDiscoverer {
   }
 }
 
+function title_to_url(title) {
+  const pokemon = title
+    .replace(/ \((active|fainted)\)/, '') // trim any (active), (fainted)
+    .replace(/.*\((.*)\)/, "$1"); // whatever is in () is the actual pokemon
+  return "https://www.smogon.com/dex/sm/pokemon/" + pokemon;
+}
+
 function add_picon_links(room_div) {
   const picons = document.querySelectorAll(".teamicons > .picon");
   for (const picon of picons) {
@@ -41,10 +48,7 @@ function add_picon_links(room_div) {
       continue;
     }
 
-    // trim any (active), (fainted), etc. from the end
-    const pokemon = picon.title.replace(/\(.*\)/, '');
-    const url = "https://www.smogon.com/dex/sm/pokemon/" + pokemon;
-    picon.onclick = () => window.open(url);
+    picon.onclick = () => window.open(title_to_url(picon.title));
     picon.style.cursor = "pointer";
   }
 }

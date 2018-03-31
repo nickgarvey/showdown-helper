@@ -10,7 +10,7 @@
         "https://play.pokemonshowdown.com/"
     ],
     "background": {
-        "scripts": ["toggle_icon.js", "show_notification.js"],
+        "scripts": ["toggle_icon.js", "handle_message.js"],
         "persistent": false
     },
     "content_scripts": [

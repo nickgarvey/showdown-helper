@@ -61,13 +61,11 @@ function show_end_battle_notif(discoverer, mutation_records, observer) {
       discoverer.is_live &&
       node.innerText.match(/.*won the battle!/)
     ) {
-      chrome.runtime.sendMessage(
-        {
-          'type': 'notification',
-          'title': 'Battle complete!',
-          'message': node.innerText,
-        }
-      );
+      chrome.runtime.sendMessage({
+        'type': 'notification',
+        'title': 'Battle complete!',
+        'message': node.innerText,
+      });
       observer.disconnect();
       discoverer.battleEnd();
       break;
@@ -100,10 +98,6 @@ function add_room_observers(mutation_records) {
   }
 }
 
-function export_tooltip(tooltip) {
-  console.log(tooltip.innerText);
-}
-
 function handle_body_update(body_div, mutation_records) {
   for (const node of yield_added_nodes(mutation_records)) {
     if (node.nodeType === ELEMENT_NODE && node.id === "tooltipwrapper") {
@@ -111,7 +105,10 @@ function handle_body_update(body_div, mutation_records) {
       if (tooltip === null) {
         continue;
       }
-      export_tooltip(tooltip);
+      chrome.runtime.sendMessage({
+        'type': 'tooltip',
+        'contents': node.innerText,
+      });
     }
   }
 }

@@ -1,5 +1,7 @@
 'use strict';
 
+const ELEMENT_NODE = 1;
+
 function* yield_added_nodes(mutation_records) {
   for (const mutation_record of mutation_records) {
     if (mutation_record.addedNodes === null) {
@@ -98,6 +100,22 @@ function add_room_observers(mutation_records) {
   }
 }
 
+function export_tooltip(tooltip) {
+  console.log(tooltip.innerText);
+}
+
+function handle_body_update(body_div, mutation_records) {
+  for (const node of yield_added_nodes(mutation_records)) {
+    if (node.nodeType === ELEMENT_NODE && node.id === "tooltipwrapper") {
+      const tooltip = node.querySelector('.tooltip');
+      if (tooltip === null) {
+        continue;
+      }
+      export_tooltip(tooltip);
+    }
+  }
+}
+
 // This script is run before the document is created, to make sure all of our
 // listeners trigger when the corresponding DOM elements are created.
 // So, we listen to the body element being created, and attach once it is.
@@ -106,6 +124,8 @@ new MutationObserver((mutation_records, observer) => {
     if (node.nodeName === "BODY") {
       (new MutationObserver(add_room_observers))
         .observe(node, {childList: true});
+      (new MutationObserver((records) => handle_body_update(node, records)))
+          .observe(node, {childList: true});
       // Once we've started observing the body nothing else to do
       observer.disconnect();
       return;

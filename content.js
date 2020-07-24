@@ -40,17 +40,18 @@ function title_to_url(title) {
   const pokemon = title
     .replace(/ \((active|fainted)\)/, '') // trim any (active), (fainted)
     .replace(/.*\((.*)\)/, "$1"); // whatever is in () is the actual pokemon
-  return "https://www.smogon.com/dex/sm/pokemon/" + pokemon;
+  return "https://www.smogon.com/dex/ss/pokemon/" + pokemon;
 }
 
 function add_picon_links(room_div) {
   const picons = document.querySelectorAll(".teamicons > .picon");
   for (const picon of picons) {
-    if (picon.title === "Not revealed") {
+    const label = picon.getAttribute('aria-label')
+    if (label === "Not revealed") {
       continue;
     }
 
-    picon.onclick = () => window.open(title_to_url(picon.title));
+    picon.onclick = () => window.open(title_to_url(label));
     picon.style.cursor = "pointer";
   }
 }

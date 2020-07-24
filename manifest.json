@@ -1,6 +1,6 @@
 {
     "name": "Showdown Helper",
-    "version": "1.1.0",
+    "version": "1.2.0",
     "description": "Adds UI elements to Pokemon Showdown for easier battles",
     "manifest_version": 2,
     "permissions": [

@@ -43,7 +43,7 @@ function title_to_url(title) {
   return "https://www.smogon.com/dex/ss/pokemon/" + pokemon;
 }
 
-function add_picon_links(room_div) {
+function add_picon_links() {
   const picons = document.querySelectorAll(".teamicons > .picon");
   for (const picon of picons) {
     const label = picon.getAttribute('aria-label')
@@ -74,12 +74,27 @@ function show_end_battle_notif(discoverer, mutation_records, observer) {
   }
 }
 
+function add_calc_link() {
+  const spriteDiv = document.querySelector(".leftbar > .trainer > .trainersprite");
+  if (spriteDiv === null) {
+    return
+  }
+  spriteDiv.onclick = () => window.open("https://calc.pokemonshowdown.com/randoms.html?mode=randoms");
+  spriteDiv.style.cursor = "pointer";
+}
+
 function observe_room(room_div) {
   const discoverer = new LiveBattleDiscoverer(room_div);
-  (new MutationObserver(() => add_picon_links(room_div)))
+  (new MutationObserver(() => add_picon_links()))
       .observe(
         room_div.querySelector('.battle'),
         {childList: true, subtree: true}
+      );
+
+  (new MutationObserver(() => add_calc_link()))
+      .observe(
+          room_div.querySelector('.battle'),
+          {childList: true, subtree: true}
       );
 
   (new MutationObserver(
